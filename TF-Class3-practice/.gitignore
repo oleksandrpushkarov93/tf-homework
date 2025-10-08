@@ -7,3 +7,5 @@
 
 # lock file
 .terraform.lock.hcl
+
+.DS_Store
