@@ -109,18 +109,50 @@ AWS CLI / Terraform then use that file to assume the AWS role (role ARN is confi
 
 ---
 
-## Stage: packer
 
-### Job: `packer`
-**Runs only when Packer files change**, because of:
+The GitLab pipeline is responsible for:
+1. **Packer stage**
+   - Runs when Packer files change (`packer/**`)
+   - Validates and builds AMIs using the environment var-file (example: `${ENV}.pkrvars.hcl`)
 
-```yaml
-rules:
-  - changes: ["packer/**"]
+2. **Terraform stage**
+   - `terraform fmt`
+   - `terraform init` using `$$TF_STATE_BUCKET_*` depending on a stage
+   - `terraform plan` using `${ENV}.tfvars`
+   - `terraform apply` 
+
+3. **Health stage**
+   - `curl` checks to ALB
+   - Optional target group health check via AWS CLI
+
+## How to Test After Deploy
+
+Replace `<ALB_DNS>` with your `alb_dns_name`.
+
+Frontend and Backend:
+```bash
+curl -I http://<ALB_DNS>/
+curl -I http://<ALB_DNS>/api
 ```
+And also health check of `$TARGET_GROUP_ARN`
 
+This project implements a fully automated infrastructure and deployment pipeline for the Versus application using Packer, Terraform, AWS, and GitLab CI.
 
+First, custom Amazon Machine Images (AMIs) are built using Packer. Separate images are created for the frontend and backend components of the Versus application. Each image is pre-configured with the application code, dependencies, system services, and required runtime configuration.
 
+Once the AMIs are built, Terraform is used to provision and manage the AWS infrastructure. During deployment, Terraform dynamically selects the most recent AMIs created by Packer. If no new AMIs are available, Terraform continues using the latest existing versions to ensure consistent and stable deployments.
+
+The entire process is automated through GitLab CI:
+	•	Packer builds and validates AMIs
+	•	Terraform initializes, plans, and applies infrastructure changes
+	•	Health checks are executed after deployment
+
+Post-deployment validation includes:
+	•	Application Load Balancer (ALB) health verification
+	•	Target group health checks via AWS CLI
+	•	HTTP checks using curl to confirm that both frontend (/) and backend (/api/) endpoints return successful HTTP 200 responses
+
+This ensures that infrastructure provisioning, application deployment, and runtime health validation are all handled automatically and consistently across environments.
 
 
 
