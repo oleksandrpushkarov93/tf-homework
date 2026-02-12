@@ -49,6 +49,20 @@ Original app files + packer, terraform and gitlab
 ```
 ---
 
+## 3) Prerequisites
 
+### AWS
+  S3 bucket for Terraform state, IAM Role for GitLab OIDC, and SSM Parameter Store values created
+
+### GitLab
+- CI/CD variable:
+  - `AWS_ROLE_ARN` role to assume in AWS
+  - `ALB_URL` and `TARGET_GROUP_ARN` for healthcheck
+  - `TF_STATE_BUCKET_DEV` for variables (staging and prod have it's own tfstate vars)
+  - `AWS_ROLE_ARN` role for GitlabCI
+  - `TF_ROOT` and `AWS_DEFAULT_REGION` for working dir for terraform and aws default region 
+- Pipeline uses **OIDC id_tokens** (no static AWS keys required)
+
+---
 
 
