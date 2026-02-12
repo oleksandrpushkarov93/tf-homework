@@ -28,6 +28,7 @@ User → **ALB** → (Frontend Target Group / Backend Target Group) → **ASG In
 
 Original app files + packer, terraform and gitlab
 .
+
 ├── packer/
 │   ├── dev.pkrvars.hcl
 │   ├── backend.pkr.hcl
