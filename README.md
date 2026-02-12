@@ -55,7 +55,7 @@ Original app files + packer, terraform and gitlab
   S3 bucket for Terraform state, IAM Role for GitLab OIDC, and SSM Parameter Store values created
 
 ### GitLab
-- CI/CD variable:
+- CI/CD variables:
   - `AWS_ROLE_ARN` role to assume in AWS
   - `ALB_URL` and `TARGET_GROUP_ARN` for healthcheck
   - `TF_STATE_BUCKET_DEV` for variables (staging and prod have it's own tfstate vars)
@@ -65,4 +65,13 @@ Original app files + packer, terraform and gitlab
 
 ---
 
+## 4) Secrets & Config (SSM Parameter Store)
 
+This project reads DB settings from **SSM Parameter Store**.
+
+Manual creation example:
+```bash
+aws ssm put-parameter --name /versus/dev/db/host --type String --value "<rds-endpoint>" --overwrite
+aws ssm put-parameter --name /versus/dev/db/password --type SecureString --value "<password>" --overwrite
+etc.
+Backend service fetches these at runtime using fetch-ssm-backend-env.sh.
