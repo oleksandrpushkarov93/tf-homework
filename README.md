@@ -23,3 +23,25 @@ This is a readme file for a repo that deploys ***Versus App*** on AWS using pack
 User → **ALB** → (Frontend Target Group / Backend Target Group) → **ASG Instances**  Backend → **RDS MySQL**
 
 ---
+
+## 2) Repo Structure
+
+Original app files + packer, terraform and gitlab
+.
+├── packer/
+│   ├── dev.pkrvars.hcl
+│   ├── backend.pkr.hcl
+│   ├── locals.pkr.hcl
+│   ├── plugins.pkr.hcl
+│   ├── prod.pkrvars.hcl
+│   ├── staging.pkrvars.hcl
+│   ├── variables.pkr.hcl
+│   ├── frontend.pkr.hcl
+│   ├── scripts/
+│   ├── systemd/
+│   └── nginx/
+├── tf-infra/
+│   ├── root-module/
+│   └── modules/
+└── .gitlab-ci.yml
+
