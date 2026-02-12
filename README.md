@@ -74,4 +74,54 @@ Manual creation example:
 aws ssm put-parameter --name /versus/dev/db/host --type String --value "<rds-endpoint>" --overwrite
 aws ssm put-parameter --name /versus/dev/db/password --type SecureString --value "<password>" --overwrite
 etc.
+```
 Backend service fetches these at runtime using fetch-ssm-backend-env.sh.
+
+
+## 5)  GitLab CI/CD Pipeline (Exact Behavior)
+
+The GitLab pipeline has **3 stages**:
+
+1) `packer`  
+2) `terraform`  
+3) `health`
+
+### Environment selection (ENV)
+
+The pipeline sets `ENV` automatically using `workflow: rules`:
+
+- If branch is `main` → `ENV=prod`
+- If branch is `staging` → `ENV=staging`
+- Otherwise → `ENV=dev` # in our case it is feature/MRP25BCENT-16
+
+That `ENV` value is used to pick: Packer var-file: `${ENV}.pkrvars.hcl` and Terraform var-file: `${ENV}.tfvars`
+
+---
+
+## AWS Authentication (OIDC)
+
+In order to avoid storing static AWS keys GitLab provides an OIDC token in the job (`GITLAB_OIDC_TOKEN`), and we write it to a file:
+
+- `AWS_WEB_IDENTITY_TOKEN_FILE=$(pwd)/oidc_token.jwt`
+- `echo "$GITLAB_OIDC_TOKEN" > "$AWS_WEB_IDENTITY_TOKEN_FILE"`
+
+AWS CLI / Terraform then use that file to assume the AWS role (role ARN is configured in GitLab CI/CD Variables).
+
+---
+
+## Stage: packer
+
+### Job: `packer`
+**Runs only when Packer files change**, because of:
+
+```yaml
+rules:
+  - changes: ["packer/**"]
+```
+
+
+
+
+
+
+
