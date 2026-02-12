@@ -45,4 +45,4 @@ Original app files + packer, terraform and gitlab
 │   ├── root-module/
 │   └── modules/
 └── .gitlab-ci.yml
-
+---
